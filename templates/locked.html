@@ -1,0 +1,17 @@
+{#
+  Locked page — shown to participants when the algorithm has already
+  been run and submissions are closed.
+#}
+{% extends "base.html" %}
+
+{% block title %}Submissions Closed — Coffee Exchange{% endblock %}
+{% block heading %}Submissions Closed{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+  <p>The coffee exchange matching has been completed!</p>
+  <p>Submissions are now closed. Head over to the
+    <a href="{{ url_for('results') }}">results page</a> to see your assignment.
+  </p>
+</div>
+{% endblock %}

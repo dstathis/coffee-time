@@ -1,0 +1,20 @@
+{#
+  Admin login form — simple password entry.
+#}
+{% extends "base.html" %}
+
+{% block title %}Admin Login — Coffee Exchange{% endblock %}
+{% block heading %}Admin Login{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 24rem;">
+  <form method="post" action="{{ url_for('admin_login') }}">
+    <div class="form-group">
+      <label for="password">Admin Password</label>
+      <input type="password" id="password" name="password"
+             placeholder="Enter admin password" required autofocus>
+    </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+  </form>
+</div>
+{% endblock %}

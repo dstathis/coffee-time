@@ -1,0 +1,109 @@
+{#
+  Participant submission form.
+
+  Renders a single-page form where a participant enters:
+    - Their name
+    - 3 bags (each with brew method, process, optional description)
+    - Their preferences (brew method, process)
+
+  If `person` is set, the form is pre-filled for editing.
+#}
+{% extends "base.html" %}
+
+{% block title %}Submit — Coffee Exchange{% endblock %}
+{% block heading %}Submit Your Coffee{% endblock %}
+
+{% block content %}
+
+<p class="text-muted">
+  Enter your name and the details of the 3 bags you're bringing.
+  If you've already submitted, enter the same name to update your entry.
+</p>
+
+<form method="post" action="{{ url_for('index') }}">
+  {# ---- Name ---- #}
+  <div class="form-group">
+    <label for="name">Your Name</label>
+    <input type="text" id="name" name="name"
+           value="{{ person.name if person else '' }}"
+           placeholder="e.g. Alice" required>
+  </div>
+
+  {# ---- Bags ---- #}
+  {% for i in range(3) %}
+  <div class="card">
+    <h3>Bag {{ i + 1 }}</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="bag{{ i + 1 }}_brew">Brew Method</label>
+        <select id="bag{{ i + 1 }}_brew" name="bag{{ i + 1 }}_brew" required>
+          <option value="filter"
+            {% if person and person.bags|length > i and person.bags[i].brew_method == 'filter' %}selected{% endif %}
+          >Filter</option>
+          <option value="espresso"
+            {% if person and person.bags|length > i and person.bags[i].brew_method == 'espresso' %}selected{% endif %}
+          >Espresso</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="bag{{ i + 1 }}_process">Process</label>
+        <select id="bag{{ i + 1 }}_process" name="bag{{ i + 1 }}_process" required>
+          <option value="washed"
+            {% if person and person.bags|length > i and person.bags[i].process == 'washed' %}selected{% endif %}
+          >Washed</option>
+          <option value="natural"
+            {% if person and person.bags|length > i and person.bags[i].process == 'natural' %}selected{% endif %}
+          >Natural</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="bag{{ i + 1 }}_desc">Description <span class="text-muted">(optional)</span></label>
+      <input type="text" id="bag{{ i + 1 }}_desc" name="bag{{ i + 1 }}_desc"
+             value="{{ person.bags[i].description if person and person.bags|length > i else '' }}"
+             placeholder="e.g. Ethiopia Yirgacheffe, Square Mile">
+    </div>
+  </div>
+  {% endfor %}
+
+  {# ---- Preferences ---- #}
+  <div class="preferences">
+    <h2>Your Preferences</h2>
+    <p class="text-muted">What kind of coffee do you prefer to receive?</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="pref_brew">Brew Method Preference</label>
+        <select id="pref_brew" name="pref_brew" required>
+          <option value="both"
+            {% if person and person.pref_brew == 'both' %}selected{% endif %}
+          >Both (no preference)</option>
+          <option value="filter"
+            {% if person and person.pref_brew == 'filter' %}selected{% endif %}
+          >Filter</option>
+          <option value="espresso"
+            {% if person and person.pref_brew == 'espresso' %}selected{% endif %}
+          >Espresso</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="pref_process">Process Preference</label>
+        <select id="pref_process" name="pref_process" required>
+          <option value="both"
+            {% if person and person.pref_process == 'both' %}selected{% endif %}
+          >Both (no preference)</option>
+          <option value="washed"
+            {% if person and person.pref_process == 'washed' %}selected{% endif %}
+          >Washed</option>
+          <option value="natural"
+            {% if person and person.pref_process == 'natural' %}selected{% endif %}
+          >Natural</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    {{ 'Update Submission' if person else 'Submit' }}
+  </button>
+</form>
+{% endblock %}

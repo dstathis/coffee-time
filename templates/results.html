@@ -1,0 +1,71 @@
+{#
+  Results page — shows the full assignment matrix after the algorithm
+  has been run.
+
+  Template variables:
+    - assignments: list of dicts grouped by recipient, or None if
+      the algorithm hasn't run yet.
+      Each dict: { "person": Person, "bags": [ { "bag": Bag,
+        "from": Person, "brew_mismatch": bool, "process_mismatch": bool } ] }
+#}
+{% extends "base.html" %}
+
+{% block title %}Results — Coffee Exchange{% endblock %}
+{% block heading %}Exchange Results{% endblock %}
+
+{% block content %}
+
+{% if assignments is none %}
+  <div class="card text-center">
+    <p class="text-muted">Results are not available yet.</p>
+    <p>The organiser hasn't run the matching algorithm. Check back later!</p>
+  </div>
+{% else %}
+  <p class="text-muted mb-1">
+    Here's who gets what! Bags flagged with a ⚠️ don't match the
+    recipient's stated preference.
+  </p>
+
+  {% for group in assignments %}
+  <div class="result-group">
+    <h3>{{ group.person.name }}</h3>
+    <p class="text-muted" style="font-size:0.85rem; margin-bottom:0.5rem;">
+      Prefers:
+      {{ group.person.pref_brew }} brew,
+      {{ group.person.pref_process }} process
+    </p>
+
+    {% for entry in group.bags %}
+    <div class="result-bag">
+      {# Brew method tag #}
+      <span class="tag tag-{{ entry.bag.brew_method }}">
+        {{ entry.bag.brew_method }}
+      </span>
+
+      {# Process tag #}
+      <span class="tag tag-{{ entry.bag.process }}">
+        {{ entry.bag.process }}
+      </span>
+
+      {# Mismatch warnings #}
+      {% if entry.brew_mismatch %}
+        <span class="tag tag-mismatch" title="Brew method doesn't match preference">⚠️ brew</span>
+      {% endif %}
+      {% if entry.process_mismatch %}
+        <span class="tag tag-mismatch" title="Process doesn't match preference">⚠️ process</span>
+      {% endif %}
+
+      {# Description #}
+      {% if entry.bag.description %}
+        <span class="bag-description">{{ entry.bag.description }}</span>
+      {% endif %}
+
+      {# Source #}
+      <span class="from-label">from {{ entry.from.name }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+{% endif %}
+{% endblock %}

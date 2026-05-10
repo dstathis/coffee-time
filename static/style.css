@@ -1,0 +1,417 @@
+/*
+ * Coffee Exchange — Custom Stylesheet
+ *
+ * Mobile-first, responsive design.  No frameworks.
+ * Colour palette inspired by coffee tones.
+ */
+
+/* ---- Reset & base ---------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: #2c1810;
+  background-color: #faf6f1;
+  padding: 1rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+/* ---- Typography ------------------------------------------------------ */
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: #3e2723;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #d7ccc8;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+p {
+  margin-bottom: 0.75rem;
+}
+
+a {
+  color: #6d4c41;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #3e2723;
+}
+
+/* ---- Flash messages -------------------------------------------------- */
+
+.flash {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.flash.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.flash.error {
+  background-color: #fce4ec;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* ---- Forms ----------------------------------------------------------- */
+
+form {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  color: #4e342e;
+}
+
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #bcaaa4;
+  border-radius: 6px;
+  background: #fff;
+  color: #2c1810;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #6d4c41;
+  box-shadow: 0 0 0 2px rgba(109, 76, 65, 0.2);
+}
+
+select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+/* ---- Buttons --------------------------------------------------------- */
+
+button,
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:active,
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: #6d4c41;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #5d4037;
+}
+
+.btn-danger {
+  background-color: #c62828;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #b71c1c;
+}
+
+.btn-secondary {
+  background-color: #d7ccc8;
+  color: #3e2723;
+}
+
+.btn-secondary:hover {
+  background-color: #bcaaa4;
+}
+
+.btn-success {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: #1b5e20;
+}
+
+/* ---- Cards (bag sections, result groups) ----------------------------- */
+
+.card {
+  background: #fff;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+/* ---- Preferences section --------------------------------------------- */
+
+.preferences {
+  background: #efebe9;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- Inline form groups (radio-style selects side by side) ----------- */
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-row > .form-group {
+  flex: 1;
+  min-width: 8rem;
+}
+
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
+/* ---- Results table --------------------------------------------------- */
+
+.result-group {
+  background: #fff;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.result-group h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #3e2723;
+}
+
+.result-bag {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #efebe9;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-bag:last-child {
+  border-bottom: none;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tag-filter {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.tag-espresso {
+  background: #3e2723;
+  color: #fff;
+}
+
+.tag-washed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tag-natural {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.tag-mismatch {
+  background: #fce4ec;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.from-label {
+  font-size: 0.85rem;
+  color: #8d6e63;
+}
+
+.bag-description {
+  font-style: italic;
+  color: #6d4c41;
+  font-size: 0.9rem;
+}
+
+/* ---- Admin table ----------------------------------------------------- */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #d7ccc8;
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  background: #efebe9;
+  font-weight: 600;
+  color: #4e342e;
+}
+
+.admin-table tr:hover {
+  background: #faf6f1;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Utility --------------------------------------------------------- */
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #8d6e63;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav a {
+  font-weight: 600;
+  text-decoration: none;
+  color: #6d4c41;
+  padding: 0.25rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.nav a:hover,
+.nav a.active {
+  border-bottom-color: #6d4c41;
+  color: #3e2723;
+}
+
+/* ---- Responsive ------------------------------------------------------ */
+
+@media (max-width: 480px) {
+  body {
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .admin-table {
+    font-size: 0.8rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.35rem 0.5rem;
+  }
+
+  button,
+  .btn {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+}

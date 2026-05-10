@@ -1,0 +1,99 @@
+{#
+  Admin dashboard — lists all participants with their bags and
+  preferences.  Provides controls to edit, delete, run the algorithm,
+  and unlock submissions.
+
+  Template variables:
+    - people: list of Person objects (with bags relationship loaded).
+    - state:  AppState singleton.
+#}
+{% extends "base.html" %}
+
+{% block title %}Admin — Coffee Exchange{% endblock %}
+{% block heading %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<p>
+  <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">Log Out</a>
+</p>
+
+{# ---- Algorithm controls ---- #}
+<div class="card">
+  <h2>Algorithm</h2>
+  {% if state.algorithm_has_run %}
+    <p class="flash success">Assignments have been generated. Submissions are locked.</p>
+    <div class="admin-actions">
+      <form method="post" action="{{ url_for('admin_run') }}"
+            onsubmit="return confirm('This will overwrite existing assignments. Are you sure?');">
+        <button type="submit" class="btn btn-primary">Re-run Algorithm</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_unlock') }}"
+            onsubmit="return confirm('This will clear all assignments and re-open submissions. Are you sure?');">
+        <button type="submit" class="btn btn-danger">Unlock Submissions</button>
+      </form>
+    </div>
+  {% else %}
+    <p class="text-muted">Submissions are open. Run the algorithm when everyone has submitted.</p>
+    <form method="post" action="{{ url_for('admin_run') }}">
+      <button type="submit" class="btn btn-success">Run Algorithm</button>
+    </form>
+  {% endif %}
+</div>
+
+{# ---- Participants table ---- #}
+<h2>Participants ({{ people|length }})</h2>
+
+{% if people %}
+<div style="overflow-x: auto;">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Bags</th>
+        <th>Brew Pref</th>
+        <th>Process Pref</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+      <tr>
+        <td>{{ person.name }}</td>
+        <td>
+          {% if person.bags|length == 3 %}
+            {% for bag in person.bags %}
+              <span class="tag tag-{{ bag.brew_method }}">{{ bag.brew_method }}</span>
+              <span class="tag tag-{{ bag.process }}">{{ bag.process }}</span>
+              {% if bag.description %}<em class="text-muted">{{ bag.description }}</em>{% endif %}
+              {% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          {% else %}
+            <span class="text-muted">{{ person.bags|length }}/3 bags</span>
+          {% endif %}
+        </td>
+        <td>{{ person.pref_brew }}</td>
+        <td>{{ person.pref_process }}</td>
+        <td>
+          <div class="admin-actions">
+            <a href="{{ url_for('admin_edit', person_id=person.id) }}" class="btn btn-secondary">Edit</a>
+            <form method="post" action="{{ url_for('admin_delete', person_id=person.id) }}"
+                  onsubmit="return confirm('Delete {{ person.name }}? This cannot be undone.');"
+                  style="display:inline;">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">No participants yet.</p>
+{% endif %}
+
+<p class="mt-1">
+  <a href="{{ url_for('results') }}">View Results →</a>
+</p>
+{% endblock %}
