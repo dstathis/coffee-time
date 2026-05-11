@@ -87,10 +87,25 @@ def create_app() -> Flask:
 
     # -- Routes ----------------------------------------------------------------
 
+    # ---- Home page -----------------------------------------------------------
+
+    @app.route("/")
+    def home():
+        """
+        Home page showing all submissions.
+
+        Displays the participant list (names, bags, preferences) without
+        action buttons.  When the algorithm has run, shows a banner
+        linking to results instead of the submit button.
+        """
+        people = Person.query.order_by(Person.name).all()
+        state = AppState.get()
+        return render_template("home.html", people=people, state=state)
+
     # ---- Participant submission page -----------------------------------------
 
-    @app.route("/", methods=["GET", "POST"])
-    def index():
+    @app.route("/submit", methods=["GET", "POST"])
+    def submit():
         """
         GET  → show the submission form (or a "locked" message if the
                algorithm has already run).
@@ -115,7 +130,7 @@ def create_app() -> Flask:
         name = request.form.get("name", "").strip()
         if not name:
             flash("Name is required.", "error")
-            return redirect(url_for("index"))
+            return redirect(url_for("submit"))
 
         # Preferences.
         pref_brew = request.form.get("pref_brew", "both")
@@ -124,10 +139,10 @@ def create_app() -> Flask:
         # Validate preference values.
         if pref_brew not in ("filter", "espresso", "both"):
             flash("Invalid brew preference.", "error")
-            return redirect(url_for("index"))
+            return redirect(url_for("submit"))
         if pref_process not in ("washed", "natural", "both"):
             flash("Invalid process preference.", "error")
-            return redirect(url_for("index"))
+            return redirect(url_for("submit"))
 
         # Collect bag data from the form.
         bag_data = []
@@ -137,10 +152,10 @@ def create_app() -> Flask:
             desc = request.form.get(f"bag{i}_desc", "").strip()
             if brew not in ("filter", "espresso"):
                 flash(f"Bag {i}: invalid brew method.", "error")
-                return redirect(url_for("index"))
+                return redirect(url_for("submit"))
             if proc not in ("washed", "natural"):
                 flash(f"Bag {i}: invalid process.", "error")
-                return redirect(url_for("index"))
+                return redirect(url_for("submit"))
             bag_data.append((brew, proc, desc))
 
         # Upsert person.
@@ -165,7 +180,7 @@ def create_app() -> Flask:
 
         db.session.commit()
         flash(f"Submission saved for {name}!", "success")
-        return redirect(url_for("index", name=name))
+        return redirect(url_for("home"))
 
     # ---- Results page --------------------------------------------------------
 
@@ -242,7 +257,7 @@ def create_app() -> Flask:
     def admin_logout():
         """Clear admin session."""
         session.pop("is_admin", None)
-        return redirect(url_for("index"))
+        return redirect(url_for("home"))
 
     @app.route("/admin")
     @require_admin

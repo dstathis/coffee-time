@@ -1,0 +1,69 @@
+{#
+  Home page — shows a list of all submissions (participants with their
+  bags and preferences), similar to the admin participants table but
+  without any action buttons.
+
+  When submissions are locked (algorithm has run), a banner links to
+  the results page.
+
+  Template variables:
+    - people: list of Person objects (with bags relationship loaded).
+    - state:  AppState singleton.
+#}
+{% extends "base.html" %}
+
+{% block title %}Coffee Exchange{% endblock %}
+{% block heading %}Coffee Exchange{% endblock %}
+
+{% block content %}
+
+{% if state.algorithm_has_run %}
+  <div class="flash success">
+    The matching is done! <a href="{{ url_for('results') }}">View results →</a>
+  </div>
+{% else %}
+  <p>
+    <a href="{{ url_for('submit') }}" class="btn btn-primary">Submit Your Coffee</a>
+  </p>
+{% endif %}
+
+<h2>Participants ({{ people|length }})</h2>
+
+{% if people %}
+<div style="overflow-x: auto;">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Bags</th>
+        <th>Brew Pref</th>
+        <th>Process Pref</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+      <tr>
+        <td>{{ person.name }}</td>
+        <td>
+          {% if person.bags|length == 3 %}
+            {% for bag in person.bags %}
+              <span class="tag tag-{{ bag.brew_method }}">{{ bag.brew_method }}</span>
+              <span class="tag tag-{{ bag.process }}">{{ bag.process }}</span>
+              {% if bag.description %}<em class="text-muted">{{ bag.description }}</em>{% endif %}
+              {% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          {% else %}
+            <span class="text-muted">{{ person.bags|length }}/3 bags</span>
+          {% endif %}
+        </td>
+        <td>{{ person.pref_brew }}</td>
+        <td>{{ person.pref_process }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">No participants yet. Be the first to submit!</p>
+{% endif %}
+{% endblock %}
