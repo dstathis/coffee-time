@@ -3,7 +3,7 @@
 ## Overview
 
 A web app to facilitate a coffee bag exchange among friends. Each participant
-brings 3 bags of coffee and receives 3 bags from other participants. The app
+brings one or more bags of coffee and receives the same number from other participants. The app
 collects bag traits and personal preferences, then runs an optimisation
 algorithm to determine the best assignment of bags to people.
 
@@ -56,7 +56,7 @@ server-side Flask session.
 | process     | String(10)  | NN          | "washed" or "natural"             |
 | description | String(200) | Nullable    | Optional name / origin / roaster  |
 
-Each person must have exactly 3 bags.
+Each person must have at least 1 bag.
 
 ### Assignment
 
@@ -81,7 +81,7 @@ A single-row table to track global state:
 
 1. Participant visits `/` — sees a form with:
    - Name field
-   - 3 bag sections, each with: brew method (filter/espresso), process
+  - One or more bag sections, each with: brew method (filter/espresso), process
      (washed/natural), description (optional text)
    - Preferences: brew method (filter/espresso/both), process
      (washed/natural/both)
@@ -121,7 +121,7 @@ Implemented as an Integer Linear Program using PuLP.
 ### Hard Constraints
 
 1. Each bag is assigned to exactly one person.
-2. Each person receives exactly 3 bags.
+2. Each person receives exactly as many bags as they submitted.
 3. No person receives their own bag.
 
 ### Objective (maximise)

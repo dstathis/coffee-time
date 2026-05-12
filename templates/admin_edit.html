@@ -22,10 +22,21 @@
            value="{{ person.name }}" required>
   </div>
 
+  <input type="hidden" id="bag_count" name="bag_count" value="{{ bag_count }}">
+
   {# ---- Bags ---- #}
-  {% for i in range(3) %}
+  <div class="form-row" style="margin-bottom: 0.75rem;">
+    <h2 style="margin: 0;">Bags</h2>
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="button" id="add-bag" class="btn btn-secondary">Add Bag</button>
+      <button type="button" id="remove-bag" class="btn btn-secondary">Remove Last</button>
+    </div>
+  </div>
+
+  <div id="bags-container">
+  {% for i in range(bag_count) %}
   <div class="card">
-    <h3>Bag {{ i + 1 }}</h3>
+    <h3 class="bag-title">Bag {{ i + 1 }}</h3>
     <div class="form-row">
       <div class="form-group">
         <label for="bag{{ i + 1 }}_brew">Brew Method</label>
@@ -58,6 +69,7 @@
     </div>
   </div>
   {% endfor %}
+  </div>
 
   {# ---- Preferences ---- #}
   <div class="preferences">
@@ -84,4 +96,70 @@
 
   <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
+
+<script>
+  (function () {
+    const container = document.getElementById('bags-container');
+    const bagCountInput = document.getElementById('bag_count');
+    const addButton = document.getElementById('add-bag');
+    const removeButton = document.getElementById('remove-bag');
+
+    function updateTitles() {
+      const cards = container.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        const title = card.querySelector('.bag-title');
+        if (title) {
+          title.textContent = `Bag ${index + 1}`;
+        }
+      });
+      bagCountInput.value = String(cards.length);
+      removeButton.disabled = cards.length <= 1;
+    }
+
+    function addBagCard() {
+      const nextIndex = container.querySelectorAll('.card').length + 1;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3 class="bag-title">Bag ${nextIndex}</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bag${nextIndex}_brew">Brew Method</label>
+            <select id="bag${nextIndex}_brew" name="bag${nextIndex}_brew" required>
+              <option value="filter">Filter</option>
+              <option value="espresso">Espresso</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bag${nextIndex}_process">Process</label>
+            <select id="bag${nextIndex}_process" name="bag${nextIndex}_process" required>
+              <option value="washed">Washed</option>
+              <option value="natural">Natural</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bag${nextIndex}_desc">Description <span class="text-muted">(optional)</span></label>
+          <input type="text" id="bag${nextIndex}_desc" name="bag${nextIndex}_desc"
+                 placeholder="e.g. Ethiopia Yirgacheffe, Square Mile">
+        </div>
+      `;
+      container.appendChild(card);
+      updateTitles();
+    }
+
+    function removeBagCard() {
+      const cards = container.querySelectorAll('.card');
+      if (cards.length <= 1) {
+        return;
+      }
+      cards[cards.length - 1].remove();
+      updateTitles();
+    }
+
+    addButton.addEventListener('click', addBagCard);
+    removeButton.addEventListener('click', removeBagCard);
+    updateTitles();
+  })();
+</script>
 {% endblock %}

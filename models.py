@@ -31,7 +31,11 @@ class Person(db.Model):
 
     # Relationship to the bags this person brought.
     bags = db.relationship(
-        "Bag", backref="owner", lazy=True, cascade="all, delete-orphan"
+        "Bag",
+        backref="owner",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="Bag.id",
     )
     # Relationship to assignments where this person is the recipient.
     received_assignments = db.relationship(

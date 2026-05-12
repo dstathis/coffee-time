@@ -34,6 +34,9 @@
       {{ group.person.pref_brew }} brew,
       {{ group.person.pref_process }} process
     </p>
+    <p class="text-muted" style="font-size:0.85rem; margin-bottom:0.75rem;">
+      Receiving {{ group.bags|length }} bag{% if group.bags|length != 1 %}s{% endif %}
+    </p>
 
     {% for entry in group.bags %}
     <div class="result-bag">

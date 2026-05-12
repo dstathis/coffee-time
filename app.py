@@ -32,6 +32,15 @@ from algorithm import AssignmentResult, BagData, PersonData, solve
 from auth import require_admin, require_basic_auth, check_admin_password
 from models import AppState, Assignment, Bag, Person, db
 
+
+def _parse_bag_count(raw_value: str) -> int | None:
+    """Parse a positive bag count from submitted form data."""
+    try:
+        count = int(raw_value)
+    except (TypeError, ValueError):
+        return None
+    return count if count > 0 else None
+
 # ---------------------------------------------------------------------------
 # App factory
 # ---------------------------------------------------------------------------
@@ -123,7 +132,8 @@ def create_app() -> Flask:
         # GET — render blank or pre-filled form.
         name = request.args.get("name", "").strip()
         person = Person.query.filter_by(name=name).first() if name else None
-        return render_template("index.html", person=person)
+        bag_count = max(len(person.bags), 1) if person else 1
+        return render_template("index.html", person=person, bag_count=bag_count)
 
     def _handle_submission():
         """Process the participant submission form."""
@@ -144,9 +154,14 @@ def create_app() -> Flask:
             flash("Invalid process preference.", "error")
             return redirect(url_for("submit"))
 
+        bag_count = _parse_bag_count(request.form.get("bag_count", ""))
+        if bag_count is None:
+            flash("Please enter a valid number of bags (at least 1).", "error")
+            return redirect(url_for("submit", name=name))
+
         # Collect bag data from the form.
         bag_data = []
-        for i in range(1, 4):
+        for i in range(1, bag_count + 1):
             brew = request.form.get(f"bag{i}_brew", "")
             proc = request.form.get(f"bag{i}_process", "")
             desc = request.form.get(f"bag{i}_desc", "").strip()
@@ -269,7 +284,9 @@ def create_app() -> Flask:
         people = Person.query.order_by(Person.name).all()
         state = AppState.get()
         return render_template(
-            "admin.html", people=people, state=state
+            "admin.html",
+            people=people,
+            state=state,
         )
 
     @app.route("/admin/delete/<int:person_id>", methods=["POST"])
@@ -314,12 +331,29 @@ def create_app() -> Flask:
             person.pref_brew = request.form.get("pref_brew", "both")
             person.pref_process = request.form.get("pref_process", "both")
 
+            bag_count = _parse_bag_count(request.form.get("bag_count", ""))
+            if bag_count is None:
+                flash("Please enter a valid number of bags (at least 1).", "error")
+                return redirect(
+                    url_for("admin_edit", person_id=person_id)
+                )
+
             # Update bags.
             Bag.query.filter_by(person_id=person.id).delete()
-            for i in range(1, 4):
+            for i in range(1, bag_count + 1):
                 brew = request.form.get(f"bag{i}_brew", "filter")
                 proc = request.form.get(f"bag{i}_process", "washed")
                 desc = request.form.get(f"bag{i}_desc", "").strip()
+                if brew not in ("filter", "espresso"):
+                    flash(f"Bag {i}: invalid brew method.", "error")
+                    return redirect(
+                        url_for("admin_edit", person_id=person_id)
+                    )
+                if proc not in ("washed", "natural"):
+                    flash(f"Bag {i}: invalid process.", "error")
+                    return redirect(
+                        url_for("admin_edit", person_id=person_id)
+                    )
                 bag = Bag(
                     person_id=person.id,
                     brew_method=brew,
@@ -332,7 +366,8 @@ def create_app() -> Flask:
             flash(f"Updated {person.name}.", "success")
             return redirect(url_for("admin_dashboard"))
 
-        return render_template("admin_edit.html", person=person)
+        bag_count = max(len(person.bags), 1)
+        return render_template("admin_edit.html", person=person, bag_count=bag_count)
 
     @app.route("/admin/run", methods=["POST"])
     @require_admin
@@ -354,9 +389,9 @@ def create_app() -> Flask:
 
         for p in people:
             person_bags = [b for b in bags if b.person_id == p.id]
-            if len(person_bags) != 3:
+            if len(person_bags) < 1:
                 flash(
-                    f"{p.name} has {len(person_bags)} bags (need 3).",
+                    f"{p.name} has no bags. Each participant needs at least 1 bag.",
                     "error",
                 )
                 return redirect(url_for("admin_dashboard"))

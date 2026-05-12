@@ -1,7 +1,7 @@
 # Coffee Exchange
 
 A web app for organising a coffee bag exchange among friends. Each participant
-brings 3 bags of coffee and receives 3 bags from other participants, matched
+brings any number of bags of coffee and receives the same number from other participants, matched
 to their preferences using an optimisation algorithm.
 
 See [SPEC.md](SPEC.md) for the full design specification.
@@ -39,7 +39,7 @@ The app starts on `http://localhost:5000`.
 ## How It Works
 
 1. Share the app URL and Basic Auth credentials with your friends.
-2. Each person submits their name, 3 bags of coffee (with brew method,
+2. Each person submits their name, one or more bags of coffee (with brew method,
    process, and optional description), and their preferences.
 3. Once everyone has submitted, the admin logs in and runs the matching
    algorithm.

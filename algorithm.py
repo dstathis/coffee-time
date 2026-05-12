@@ -15,7 +15,7 @@ Decision variables:
 
 Hard constraints:
   1. Each bag is assigned to exactly one person.
-  2. Each person receives exactly 3 bags.
+    2. Each person receives exactly as many bags as they submitted.
   3. No person receives a bag they brought.
 
 Objective (maximise):
@@ -134,7 +134,7 @@ def solve(
     Parameters
     ----------
     people : list[PersonData]
-        All participants.  Each must have brought exactly 3 bags present
+        All participants.  Each must have brought at least one bag present
         in *bags*.
     bags : list[BagData]
         All bags across all participants.
@@ -156,6 +156,10 @@ def solve(
     bag_ids = [b.id for b in bags]
     bag_by_id = {b.id: b for b in bags}
     person_by_id = {p.id: p for p in people}
+    bags_required_by_person = {
+        p_id: sum(1 for b in bags if b.owner_id == p_id)
+        for p_id in person_ids
+    }
 
     # Distinct source (owner) ids for each bag, used for diversity.
     owner_ids = sorted({b.owner_id for b in bags})
@@ -178,11 +182,12 @@ def solve(
             f"bag_{b}_assigned_once",
         )
 
-    # C2: Each person receives exactly 3 bags.
+    # C2: Each person receives as many bags as they submitted.
     for p in person_ids:
+        required = bags_required_by_person[p]
         prob += (
-            pulp.lpSum(x[b][p] for b in bag_ids) == 3,
-            f"person_{p}_gets_3",
+            pulp.lpSum(x[b][p] for b in bag_ids) == required,
+            f"person_{p}_gets_{required}",
         )
 
     # C3: No person receives their own bag.

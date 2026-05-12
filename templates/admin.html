@@ -61,7 +61,8 @@
       <tr>
         <td>{{ person.name }}</td>
         <td>
-          {% if person.bags|length == 3 %}
+          {% if person.bags|length > 0 %}
+            <span class="text-muted">{{ person.bags|length }} bag{% if person.bags|length != 1 %}s{% endif %}</span><br>
             {% for bag in person.bags %}
               <span class="tag tag-{{ bag.brew_method }}">{{ bag.brew_method }}</span>
               <span class="tag tag-{{ bag.process }}">{{ bag.process }}</span>
@@ -69,7 +70,7 @@
               {% if not loop.last %}<br>{% endif %}
             {% endfor %}
           {% else %}
-            <span class="text-muted">{{ person.bags|length }}/3 bags</span>
+            <span class="text-muted">No bags</span>
           {% endif %}
         </td>
         <td>{{ person.pref_brew }}</td>
